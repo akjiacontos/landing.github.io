@@ -1,9 +1,10 @@
-const canvas = document.getElementById("cosmoCanvas");
+const canvas = document.getElementById("nebulaCanvas");
 if (!canvas) {
   console.error("No se encontró el canvas!");
 } else {
   const ctx = canvas.getContext("2d");
 
+  // Ajustar el tamaño del canvas al tamaño de la ventana
   function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -11,6 +12,7 @@ if (!canvas) {
   resizeCanvas();
   window.addEventListener("resize", resizeCanvas);
 
+  // Crear y gestionar partículas
   let particles = [];
   function createParticle(x, y) {
     return {
@@ -24,6 +26,7 @@ if (!canvas) {
     };
   }
 
+  // Inicializar partículas
   for (let i = 0; i < 20; i++) {
     particles.push(createParticle(Math.random() * canvas.width, Math.random() * canvas.height));
   }
@@ -58,34 +61,38 @@ if (!canvas) {
   }
   animate();
 
+  // Crear partículas al mover el ratón
   canvas.addEventListener("mousemove", (e) => {
     for (let i = 0; i < 3; i++) {
       particles.push(createParticle(e.x, e.y));
     }
   });
 
-  // Secuencia de notas de Für Elise
+  // Secuencia de notas de "Für Elise" (frecuencias en Hz)
   const furEliseNotes = [
-    659.25, 622.25, 659.25, 622.25, 659.25, 493.88, 587.33, 523.25, 440, // Primera frase
+    659.25, 622.25, 659.25, 622.25, 659.25, 493.88, 587.33, 523.25, 440, // E5, D#5, E5, D#5, E5, B4, D5, C5, A4
+    523.25, 493.88, 440, 392, 440, 493.88, 523.25, 587.33, 659.25,       // C5, B4, A4, G4, A4, B4, C5, D5, E5
     659.25, 622.25, 659.25, 622.25, 659.25, 493.88, 587.33, 523.25, 440  // Repetición
   ];
   let noteIndex = 0;
+  let audioCtx = null;
 
-  let audioCtx;
+  // Reproducir notas al hacer clic
   canvas.addEventListener("click", (e) => {
     if (!audioCtx) audioCtx = new AudioContext();
     if (audioCtx.state === "suspended") audioCtx.resume();
 
     const osc = audioCtx.createOscillator();
-    osc.frequency.value = furEliseNotes[noteIndex]; // Toca la nota actual
+    osc.frequency.value = furEliseNotes[noteIndex];
     osc.type = "sine";
     osc.connect(audioCtx.destination);
     osc.start();
-    osc.stop(audioCtx.currentTime + 0.3);
+    osc.stop(audioCtx.currentTime + 0.4); // Duración de 0.4s
 
-    noteIndex = (noteIndex + 1) % furEliseNotes.length; // Avanza y reinicia si termina
+    noteIndex = (noteIndex + 1) % furEliseNotes.length;
   });
 
+  // Reiniciar partículas con la tecla 'r'
   document.addEventListener("keydown", (e) => {
     if (e.key.toLowerCase() === "r") {
       particles = [];
