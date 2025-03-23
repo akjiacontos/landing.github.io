@@ -1,6 +1,6 @@
 const canvas = document.getElementById("nebulaCanvas");
 if (!canvas) {
-  console.error("No se encontró el canvas!");
+  console.error("No se encontró el canvas. Asegúrate de que el id sea 'nebulaCanvas'.");
 } else {
   const ctx = canvas.getContext("2d");
 
@@ -61,7 +61,7 @@ if (!canvas) {
   }
   animate();
 
-  // Crear partículas al mover el ratón
+  // Crear partículas al mover el ratón (sin sonido)
   canvas.addEventListener("mousemove", (e) => {
     for (let i = 0; i < 3; i++) {
       particles.push(createParticle(e.x, e.y));
@@ -70,24 +70,28 @@ if (!canvas) {
 
   // Secuencia de notas de "Für Elise" (frecuencias en Hz)
   const furEliseNotes = [
-    659.25, 622.25, 659.25, 622.25, 659.25, 493.88, 587.33, 523.25, 440, // E5, D#5, E5, D#5, E5, B4, D5, C5, A4
-    523.25, 493.88, 440, 392, 440, 493.88, 523.25, 587.33, 659.25,       // C5, B4, A4, G4, A4, B4, C5, D5, E5
-    659.25, 622.25, 659.25, 622.25, 659.25, 493.88, 587.33, 523.25, 440  // Repetición
+    659.25, 622.25, 659.25, 622.25, 659.25, 493.88, 587.33, 523.25, 440,
+    523.25, 493.88, 440, 392, 440, 493.88, 523.25, 587.33, 659.25,
+    659.25, 622.25, 659.25, 622.25, 659.25, 493.88, 587.33, 523.25, 440
   ];
   let noteIndex = 0;
   let audioCtx = null;
 
   // Reproducir notas al hacer clic
   canvas.addEventListener("click", (e) => {
-    if (!audioCtx) audioCtx = new AudioContext();
-    if (audioCtx.state === "suspended") audioCtx.resume();
+    if (!audioCtx) {
+      audioCtx = new AudioContext();
+    }
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
 
     const osc = audioCtx.createOscillator();
     osc.frequency.value = furEliseNotes[noteIndex];
     osc.type = "sine";
     osc.connect(audioCtx.destination);
     osc.start();
-    osc.stop(audioCtx.currentTime + 0.4); // Duración de 0.4s
+    osc.stop(audioCtx.currentTime + 0.4); // Duración de 0.4 segundos
 
     noteIndex = (noteIndex + 1) % furEliseNotes.length;
   });
