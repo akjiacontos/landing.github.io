@@ -64,16 +64,26 @@ if (!canvas) {
     }
   });
 
+  // Secuencia de notas de Für Elise
+  const furEliseNotes = [
+    659.25, 622.25, 659.25, 622.25, 659.25, 493.88, 587.33, 523.25, 440, // Primera frase
+    659.25, 622.25, 659.25, 622.25, 659.25, 493.88, 587.33, 523.25, 440  // Repetición
+  ];
+  let noteIndex = 0;
+
   let audioCtx;
   canvas.addEventListener("click", (e) => {
     if (!audioCtx) audioCtx = new AudioContext();
     if (audioCtx.state === "suspended") audioCtx.resume();
+
     const osc = audioCtx.createOscillator();
-    osc.frequency.value = 200 + e.y * 0.5;
+    osc.frequency.value = furEliseNotes[noteIndex]; // Toca la nota actual
     osc.type = "sine";
     osc.connect(audioCtx.destination);
     osc.start();
     osc.stop(audioCtx.currentTime + 0.3);
+
+    noteIndex = (noteIndex + 1) % furEliseNotes.length; // Avanza y reinicia si termina
   });
 
   document.addEventListener("keydown", (e) => {
